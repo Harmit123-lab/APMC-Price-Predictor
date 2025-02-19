@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Price Prediction Result</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_result.css') }}" />
+  </head>
+  <body>
+    <h1>Price Prediction Result for {{ product }}</h1>
+
+    <div class="chart-container" id="chartContainer">
+      <canvas id="priceChart"></canvas>
+      <div class="toggle-btn" id="toggleButton">⛶</div>
+    </div>
+
+    <a class="back-button" href="/">Go Back</a>
+
+    <script>
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        
+        const observedData = {{ response.observed | tojson }};
+        const predictedData = {{ response.predicted | tojson }};
+        const forecastData = {{ response.forecast | tojson }};
+        
+        const dates = {{ response.dates | tojson }};
+        const forecastDates = {{ response.forecast_dates | tojson }};
+
+        const totalDuration = 2000;
+        const delayBetweenPoints = totalDuration / observedData.length;
+        const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(observedData[0]) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+
+
+        // Ensure forecast starts after last observed date
+        const alignedForecastData = new Array(dates.length).fill(null).concat(forecastData);
+        
+        const chartData = {
+            labels: dates.concat(forecastDates),
+            datasets: [
+                {
+                    label: 'Observed Prices',
+                    data: observedData,
+                    borderColor: 'blue',
+                    fill: false,
+                },
+                {
+                    label: 'Predicted Prices',
+                    data: predictedData,
+                    borderColor: 'green',
+                    fill: false,
+                },
+                {
+                    label: 'Forecast Prices',
+                    data: alignedForecastData,
+                    borderColor: 'red',
+                    fill: false,
+                }
+            ]
+        };
+
+        const chartOptions = {
+            responsive: true,
+            animation: {
+                x: {
+                    type: 'number',
+                    easing: 'linear',
+                    duration: delayBetweenPoints,
+                    from: NaN, // the point is initially skipped
+                    delay(ctx) {
+                        if (ctx.type !== 'data' || ctx.xStarted) {
+                            return 0;
+                        }
+                        ctx.xStarted = true;
+                        return ctx.index * delayBetweenPoints;
+                    }
+                },
+                y: {
+                    type: 'number',
+                    easing: 'linear',
+                    duration: delayBetweenPoints,
+                    from: previousY,
+                    delay(ctx) {
+                        if (ctx.type !== 'data' || ctx.yStarted) {
+                            return 0;
+                        }
+                        ctx.yStarted = true;
+                        return ctx.index * delayBetweenPoints;
+                    }
+                }
+            },
+            interaction: {
+                intersect: false
+            },
+            plugins: {
+                legend: true
+            },
+            scales: {
+                x: {
+                    type: 'category',
+                    title: {
+                        display: true,
+                        text: 'Dates'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Price'
+                    }
+                }
+            }
+        };
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: chartOptions
+        });
+
+        // Toggle Fullscreen Functionality
+        const chartContainer = document.getElementById("chartContainer");
+        const toggleButton = document.getElementById("toggleButton");
+
+        toggleButton.addEventListener("click", () => {
+            if (chartContainer.classList.contains("fullscreen")) {
+                chartContainer.classList.remove("fullscreen");
+                toggleButton.textContent = "⛶"; // Maximize icon
+            } else {
+                chartContainer.classList.add("fullscreen");
+                toggleButton.textContent = "✖"; // Minimize icon
+            }
+        });
+
+    </script>
+  </body>
+</html>

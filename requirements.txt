@@ -1,0 +1,8 @@
+Flask==2.1.1            # Flask for the web framework
+pandas==1.5.2           # Pandas for data handling
+numpy==1.23.2           # NumPy for numerical operations
+statsmodels==0.13.2     # Statsmodels for ARIMA modeling
+scikit-learn==1.0.2     # Scikit-learn (if you're using it for preprocessing or model evaluation)
+joblib==1.1.0           # Joblib for saving/loading the ARIMA model
+matplotlib==3.5.2       # Matplotlib for plotting (if you're visualizing data or results)
+flask-cors==3.1.1       # Flask CORS for handling cross-origin requests (if needed)

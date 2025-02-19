@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>APMC Price Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_index.css') }}">
+</head>
+<body>
+        <h1 id="heading">Welcome to APMC Price Predictor!</h1>
+        <form id="inputs" action="/predict" method="POST">
+            <h2> <label for="category">Category:</label> </h2>
+            <select name="category" id="category"> 
+                <option value="" disabled selected>Select category</option>
+                <option value="Commodities">Commodities</option>
+                <option value="Fruits">Fruits</option>
+                <option value="Vegetables">Vegetables</option>
+            </select>
+            <br>
+            <h2> <label for="product">Select a product:</label> </h2>
+            <select id="product" name="product">
+                <option value="" disabled selected>Choose a product</option>
+            </select>
+
+            <br>
+            <button type="submit">Predict</button>
+        </form>
+
+        <script>
+            const category = document.getElementById('category');
+            const product = document.getElementById('product');
+            const options = {
+                Commodities: ['કપાસ બી. ટી.', 'ઘઉં લોકવન', 'ઘઉં ટુકડા', 'મગફળી જીણી', 'સિંગદાણા જાડા', 'સિંગ ફાડીયા', 'એરંડા / એરંડી', 
+                                'જીરૂ', 'ક્લંજી', 'વરીયાળી', 'ધાણા', 'લસણ સુકું', 'ડુંગળી લાલ', 'અડદ', 'તુવેર', 'રાયડો', 'રાય', 'મેથી', 
+                                'કાંગ', 'કરીજીરી', 'સુરજમુખી', 'ગુવાર બી', 'મગફળી જાડી', 'સફેદ ચણા', 'મગફળી નવી', 'તલ - તલી', 'ધાણી', 
+                                'બાજરો', 'જુવાર', 'મકાઇ', 'મગ', 'ચણા', 'વાલ', 'વાલ પાપડી', 'ચોળા / ચોળી', 'સોયાબીન', 'અજમાં', 
+                                'ગોગળી', 'વટાણા', 'તલ કાળા', 'મઠ', 'ઇસબગુલ', 'રાજગરો', 'તલ લાલ', 'કપાસ નવો', 'સુવાદાણા', 'મગફળી 66', 
+                                'અરીઠા', 'કળથી', 'મરચા સૂકા પટ્ટો', 'મરચા', 'ડુંગળી સફેદ', 'નવા ધાણા'],
+                Fruits: ['Apple', 'Banana', 'Cherry'],
+                Vegetables: ['Carrot', 'Broccoli', 'Spinach']
+            };
+            category.addEventListener('change', function() {
+                product.innerHTML = '<option value="" disabled selected>Choose a product</option>';
+
+                const selectedValue = this.value;
+                if(selectedValue){
+                    options[selectedValue].forEach(function(item) {
+                        const option = document.createElement("option");
+                        option.value = item;
+                        option.textContent = item;
+                        product.appendChild(option);
+                    });
+                }
+            });
+        </script>
+</body>
+</html>
